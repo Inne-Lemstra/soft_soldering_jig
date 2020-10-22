@@ -8,6 +8,7 @@ $fn = 20;
 //to do:
 //refactor code
 //model electric poles without spheres to remove render()
+//drain pour protection should be longer
 
 
 //v_(next ideas)
@@ -17,14 +18,14 @@ $fn = 20;
 
 render_jig = false;  //render Jig object as 3D object
 render_mold = true; //render a mold with which to make the 3D object
-    render_mold_above_ground = true;
-    render_mold_underground = false;
+    render_mold_above_ground = false;
+    render_mold_underground = true;
     render_mold_combine_tube = false;
     render_mold_drainage =false;
 
 
 dia_city = 100;
-w_city_wall = 2;
+w_city_wall = 10;
 
 //buillding
 w_building = 10;
@@ -41,8 +42,8 @@ dia_plaza = dia_manhole * 6 ;
 h_ground = 2;
 h_above_ground = h_ground + h_building;
 
-dia_drain = 5;
-l_drain  = 10;
+dia_drain = 6;
+l_drain  = 15;
 dia_pipe  = 1;
 h_foundation = 10;
 dia_foundation = w_building * 0.8;
@@ -180,7 +181,7 @@ module foundation() {
     intersection(){
         union(){
         translate([0,0,-h_foundation])
-        make_grid(allow_outside_city = false, w_boundries = [-w_building /2 , - w_building /2 ]) 
+        make_grid(allow_outside_city = false, w_boundries = [-w_city_wall - w_building , -w_city_wall - w_building]) 
             cylinder_to_building()cylinder(h_foundation, d =dia_foundation);    
     }
     translate([0,0, -h_foundation])

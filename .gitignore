@@ -1,0 +1,9 @@
+**/photo's
+**/stl
+**/legacy
+*.gcode
+*.stl
+*.info
+*.json
+*.mp4
+

@@ -345,7 +345,7 @@ module mold_drainage(){
     }
 }
 
-module area_cross_section(angle = 25){
+module area_cross_section(angle = 180){
     h = h_above_ground + h_underground;
     l = dia_city / 2;
     w = dia_city / 2;
@@ -354,7 +354,7 @@ module area_cross_section(angle = 25){
     translate([0,0,h_above_ground])
     rotate([180,0,0])
     linear_extrude(h)
-    polygon([[0,0], [l,0], [l,w], [sin(angle), cos(angle)] * l] );
+    polygon([[0,0], [l,0], [l,w], [cos(angle), sin(angle)] * l] );
     
 }
 

@@ -27,12 +27,15 @@ $fn = 30;
     //make list of components you might want to solder
     //make allow_outside_city param more reliable
 
-render_jig = false;  //render Jig object as 3D object
-render_mold = true; //render a mold with which to make the 3D object
+render_jig = true;  //render Jig object as 3D object
+     render_cross_section = true;
+render_mold = false; //render a mold with which to make the 3D object
     render_mold_above_ground = false;
     render_mold_underground = true;
     render_mold_combine_tube = false;
     render_mold_drainage =false;
+  
+
 
 
 dia_city = 100;
@@ -82,7 +85,14 @@ ny_buildings = ceil(dia_city / w_building) ;    //number of buildings in y direc
 l_grid = (l_building + w_street) * nx_buildings - w_street; //grid of buildings
 w_grid = (w_building + w_street) * nx_buildings - w_street; 
 
-if (render_jig) make_model();
+if (render_jig){
+    difference(){
+        make_model();
+        if(render_cross_section){
+            area_cross_section();
+        }
+    }
+}
     
 if (render_mold) make_mold();
 
@@ -109,9 +119,9 @@ module building() cube([l_building, w_building, h_building], center = false);
 
 
 module make_model(){
+
     make_above_ground();
     make_underground();
-    
 }
 
 module grid_to_origin() translate([l_grid / -2, w_grid / -2, 0]) children();
@@ -335,5 +345,16 @@ module mold_drainage(){
     }
 }
 
-   
+module area_cross_section(angle = 25){
+    h = h_above_ground + h_underground;
+    l = dia_city / 2;
+    w = dia_city / 2;
+    
+    
+    translate([0,0,h_above_ground])
+    rotate([180,0,0])
+    linear_extrude(h)
+    polygon([[0,0], [l,0], [l,w], [sin(angle), cos(angle)] * l] );
+    
+}
 

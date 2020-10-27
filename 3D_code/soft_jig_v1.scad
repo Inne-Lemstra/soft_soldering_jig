@@ -345,7 +345,7 @@ module mold_drainage(){
     }
 }
 
-module area_cross_section(angle = 180){
+module area_cross_section(angle = 60){
     h = h_above_ground + h_underground;
     l = dia_city / 2;
     w = dia_city / 2;

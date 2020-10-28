@@ -6,17 +6,20 @@
 
 //mold consist of 2 parts.
 
-$fn = 250;
+$fn = 50;
 
 
 
 render_model = true;
+         render_cross_section = true;
+         angle_cross_section = 90;
 render_mold = false;
 render_drain_plug = false;
 
 
 dia_city = 90;
 w_city_wall = 2;
+
 
 //buillding
 w_building = 10;
@@ -29,6 +32,8 @@ w_street = .8;
 dia_pothole = 1.2;    // 1206 LED is 3.2mm by 1.6 mm
 h_pothole_pipe = 0.5; //transision cone between pothole and pipe
 dia_plaza = dia_pothole * 6 ;
+h_above_ground = h_building;
+
 
 h_underground = 10;
 dia_drain = 5;
@@ -101,7 +106,10 @@ module make_model(){
 }
 
 if(render_model){
+   difference(){
     make_model();
+     if( render_cross_section) area_cross_section(angle_cross_section);
+     }
 }
 
 w_mold = w_grid + 10 + w_mold_wall;
@@ -151,4 +159,17 @@ module drain_plug(){
 if(render_drain_plug){
     prototype_drain();
     drain_plug();
+}
+
+module area_cross_section(angle = 60){
+    h = h_above_ground + h_underground;
+    l = dia_city / 2;
+    w = dia_city / 2;
+    
+    
+    translate([0,0,h_above_ground])
+    rotate([180,0,0])
+    linear_extrude(h)
+    polygon([[0,0], [l,0], [l,w], [cos(angle), sin(angle)] * l] );
+    
 }

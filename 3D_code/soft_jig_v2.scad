@@ -183,8 +183,8 @@ module make_underground(){
     difference(){
     translate([0,0, -h_underground])
     cylinder(h_underground, d= dia_city);
-        translate([0, w_building , -h_underground / 2])
-        cube([dia_city, ny_manhole * w_building *2 ,h_underground] , center = true);
+        translate([0, w_building * 1.2 /2.1, -h_underground / 2])
+        cube([dia_city, ny_manhole * w_building *1.2 ,h_underground] , center = true);
     }
    make_wall();
     color("grey")
@@ -328,20 +328,7 @@ module mold_combine_tube(){
 
 
 
-module mold_drainage(){
-    //The tiny drain part to be inserted in v1 mold bot
-    intersection(){
-    union(){
-        difference(){
-                    translate([0,0, h_mold_bottom])
-                rotate([180,0,0])
-            cylinder(h_underground + h_mold_bottom, d = dia_city + w_mold_wall);
-           make_underground();
-        }
-    }
-    location_drainage();
-    }
-}
+
 
 module electric_pole(){
     union(){

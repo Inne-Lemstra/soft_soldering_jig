@@ -16,10 +16,11 @@ $fn = 20;
     //make list of components you might want to solder
     //make allow_outside_city param more reliable
 
-render_jig = false;  //render Jig object as 3D object
-render_mold = true; //render a mold with which to make the 3D object
-    render_mold_above_ground = true;
-    render_mold_underground = false;
+render_jig = true;  //render Jig object as 3D object
+    render_cross_section = true;
+render_mold = false; //render a mold with which to make the 3D object
+    render_mold_above_ground = false;
+    render_mold_underground = true;
     render_mold_combine_tube = false;
     render_mold_drainage =false;
 
@@ -73,7 +74,16 @@ ny_buildings = ceil(dia_city / w_building) ;    //number of buildings in y direc
 l_grid = (l_building + w_street) * nx_buildings - w_street; //grid of buildings
 w_grid = (w_building + w_street) * nx_buildings - w_street; 
 
-if (render_jig) make_model();
+
+if (render_jig){
+    difference(){
+        make_model();
+        if(render_cross_section){
+            area_cross_section();
+        }
+    }
+}
+   
     
 if (render_mold) make_mold();
 
@@ -143,7 +153,7 @@ difference(){
         cylinder(h_ground,  d = dia_city);
     //to make an acutrate representation how the jig will look
     //even though rods will be added after printing so can't be used when making mold
-    if (render_jig)  #make_grid(allow_outside_city = false) move_to_crossroad() render() electric_pole();
+    if (render_jig)  #make_grid(allow_outside_city = false, ny = 2) move_to_crossroad() render() electric_pole();
     }
      intersection(){
         union(){
@@ -169,6 +179,12 @@ module make_underground(){
     difference(){
         foundation();
         location_drainage();
+    }
+    difference(){
+    translate([0,0, -h_underground])
+    cylinder(h_underground, d= dia_city);
+        translate([0, w_building , -h_underground / 2])
+        cube([dia_city, ny_manhole * w_building *2 ,h_underground] , center = true);
     }
    make_wall();
     color("grey")
@@ -350,3 +366,16 @@ module electric_pole(){
 
 
 //electric_pole();
+
+module area_cross_section(angle = 60){
+    h = h_above_ground + h_underground;
+    l = dia_city / 2;
+    w = dia_city / 2;
+    
+    
+    translate([0,0,h_above_ground])
+    rotate([180,0,0])
+    linear_extrude(h)
+    polygon([[0,0], [l,0], [l,w], [cos(angle), sin(angle)] * l] );
+    
+}

@@ -27,11 +27,11 @@ $fn = 30;
     //make list of components you might want to solder
     //make allow_outside_city param more reliable
 
-render_jig = true;  //render Jig object as 3D object
+render_jig = false;  //render Jig object as 3D object
      render_cross_section = true;
-render_mold = false; //render a mold with which to make the 3D object
-    render_mold_above_ground = false;
-    render_mold_underground = true;
+render_mold = true; //render a mold with which to make the 3D object
+    render_mold_above_ground = true;
+    render_mold_underground = false;
     render_mold_combine_tube = false;
     render_mold_drainage =false;
   
@@ -286,7 +286,7 @@ module mold_above_ground(){
         union(){
             translate([0,0, -h_mold_buffer])
             //manhole pipes
-            make_grid() move_to_crossroad() cylinder(h_mold_buffer, d=dia_manhole);
+           make_grid(allow_outside_city = false) move_to_crossroad() cylinder(h_mold_buffer, d=dia_manhole);
         }
         translate([0,0,-h_mold_buffer])
         cylinder(h_mold_buffer, d=dia_city);

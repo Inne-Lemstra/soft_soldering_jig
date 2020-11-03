@@ -1,6 +1,6 @@
 //(c) Inne Lemstra 12-10-20
 
-$fn = 20;
+$fn = 50;
 
 //v2 Top mold will use externa metal (manhole) pipes instead of 3D printed ones
 
@@ -19,8 +19,8 @@ $fn = 20;
 render_jig = false;  //render Jig object as 3D object
     render_cross_section = true;
 render_mold = true; //render a mold with which to make the 3D object
-    render_mold_above_ground = false;
-    render_mold_underground = true;
+    render_mold_above_ground = true;
+    render_mold_underground = false;
     render_mold_combine_tube = false;
 
 
@@ -57,7 +57,7 @@ h_underground = h_foundation + h_bedrock;
 
 //mold variables
 h_mold_bottom = 3;
-h_mold_ceiling = 3;
+h_mold_ceiling = 6;
 w_mold_wall = 3;
 h_mold_buffer = 2; //buffer space to prevent overflow
 w_mold_wall_combine = 4;

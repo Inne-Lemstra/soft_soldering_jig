@@ -18,8 +18,8 @@ $fn = 20;
 
 render_jig = false;  //render Jig object as 3D object
 render_mold = true; //render a mold with which to make the 3D object
-    render_mold_above_ground = false;
-    render_mold_underground = true;
+    render_mold_above_ground = true;
+    render_mold_underground = false;
     render_mold_combine_tube = false;
     render_mold_drainage =false;
 
@@ -35,8 +35,9 @@ h_building = 3;
 w_street = .8;
 
 
-dia_manhole = 1.5;    // 1206 LED is 3.2mm by 1.6 mm
+dia_manhole = 0.81;    // 1206 LED is 3.2mm by 1.6 mm
 h_manhole_pipe = 0.5; //transision cone between manhole and pipe
+ny_manhole = 2;
 dia_plaza = dia_manhole * 6 ;
 
 h_ground = 2;
@@ -67,6 +68,7 @@ l_tube_protection = 1;
 
 nx_buildings = ceil(dia_city / l_building);        //number of buildings in x direction
 ny_buildings = ceil(dia_city / w_building) ;    //number of buildings in y direction
+
 
 l_grid = (l_building + w_street) * nx_buildings - w_street; //grid of buildings
 w_grid = (w_building + w_street) * nx_buildings - w_street; 
@@ -105,16 +107,16 @@ module make_model(){
 
 module grid_to_origin() translate([l_grid / -2, w_grid / -2, 0]) children();
 
-module move_to_crossroad()translate ([w_street / -2, w_street / -2, 0]) children() ;
+module move_to_crossroad()translate ([w_street/-2, w_street /-2, 0]) children() ;
 
 module cylinder_to_building() translate([l_building / 2, w_building / 2, 0]) children();
 
-module make_grid(allow_outside_city = true, w_boundries = [0,0]){
+module make_grid(allow_outside_city = true, w_boundries = [0,0], nx = nx_buildings, ny = ny_buildings){
         
     union(){
-        for(i = [(-nx_buildings +1) / 2 : 1 :(nx_buildings -1) / 2]){
-            for(j = [(-ny_buildings + 1 )/2 : 1 : (ny_buildings -1) /2 ]){
-                x_building = ((l_building +w_street) * i ) +w_building / 2;
+        for(i = [(-nx +1) / 2 : 1 :(nx -1) / 2]){
+            for(j = [(-ny + 1 )/2 : 1 : (ny -1) /2 ]){
+                x_building = ((l_building +w_street) * i ) +l_building / 2;
                 y_building = ((w_building +w_street)*j ) + w_building /2;
                 //pythogoras incoming
                 if(allow_outside_city || (
@@ -136,16 +138,15 @@ module make_grid(allow_outside_city = true, w_boundries = [0,0]){
 
 
 module make_above_ground(){
-    render() intersection(){
-        union(){
-        difference(){
-        //create ground
+
+difference(){
         cylinder(h_ground,  d = dia_city);
-            //substract manholes
-  
-           //make_grid() move_to_crossroad() cylinder(h_ground, d=dia_manhole);
-        }
-        
+    //to make an acutrate representation how the jig will look
+    //even though rods will be added after printing so can't be used when making mold
+    if (render_jig)  #make_grid(allow_outside_city = false) move_to_crossroad() render() electric_pole();
+    }
+     intersection(){
+        union(){
         //move above the ground
         translate([0,0, h_ground]){
             difference(){
@@ -181,7 +182,7 @@ module foundation() {
     intersection(){
         union(){
         translate([0,0,-h_foundation])
-        make_grid(allow_outside_city = false, w_boundries = [-w_city_wall - w_building , -w_city_wall - w_building]) 
+        make_grid(allow_outside_city = false, w_boundries = [-w_city_wall - w_building , -w_city_wall - w_building], ny = ny_manhole) 
             cylinder_to_building()cylinder(h_foundation, d =dia_foundation);    
     }
     translate([0,0, -h_foundation])
@@ -258,7 +259,7 @@ module mold_above_ground(){
     difference(){
         cylinder(h_above_ground + h_mold_ceiling, d = dia_city + w_mold_wall);
         make_above_ground();
-         #make_grid() move_to_crossroad() electric_pole();
+         #make_grid(allow_outside_city = false, nx = 8,ny = ny_manhole) move_to_crossroad() render() electric_pole();
     }
     
     //some buffer space when pouring silicone
@@ -328,14 +329,18 @@ module mold_drainage(){
 
 module electric_pole(){
     union(){
-    h_electric_pole = h_above_ground + h_mold_ceiling;
+    h_electric_pole = h_above_ground + h_mold_ceiling - dia_manhole;
     cylinder(h_electric_pole, d= dia_manhole);
     translate([0,0, h_electric_pole]){
         sphere(d= dia_manhole);
+        //translate([-dia_manhole, -dia_manhole, 0] / 2)
         rotate([-90,0,0])
-        cylinder(w_building * 0.7, d= dia_manhole);
+        cylinder( w_building* 0.7, d= dia_manhole);
+        rotate([0,0,90])
+        translate([-dia_manhole, -dia_manhole, 0] /2)
+        cube([w_building*0.7 + dia_manhole , dia_manhole, dia_manhole *4]);
         translate([0, w_building * 0.7, 0]){
-                sphere(d= dia_manhole);
+               sphere(d= dia_manhole);
                 translate([0,0, - h_mold_ceiling *0.8])
                 cylinder(h_mold_ceiling *0.8, d=dia_manhole);
         }
@@ -344,4 +349,4 @@ module electric_pole(){
 }
 
 
-
+//electric_pole();

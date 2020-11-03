@@ -16,13 +16,13 @@ $fn = 20;
     //make list of components you might want to solder
     //make allow_outside_city param more reliable
 
-render_jig = true;  //render Jig object as 3D object
+render_jig = false;  //render Jig object as 3D object
     render_cross_section = true;
-render_mold = false; //render a mold with which to make the 3D object
+render_mold = true; //render a mold with which to make the 3D object
     render_mold_above_ground = false;
     render_mold_underground = true;
     render_mold_combine_tube = false;
-    render_mold_drainage =false;
+
 
 
 dia_city = 100;
@@ -248,6 +248,7 @@ module make_drainage(){
    
 }
 
+
 module drain_pipe(){
     translate([dia_city/2 - l_drain,0, - h_foundation / 2])
     rotate([0,90,0])
@@ -255,7 +256,10 @@ module drain_pipe(){
     
 }
 
+
 module location_drainage(){
+    //shape of outline drainage with same heigth as foundation
+    //to cleare underground area above/below drainage
     intersection(){
         translate([dia_city / 2 - l_drain_support, -w_drain_support/2, -h_foundation])
         cube([ l_drain_support, w_drain_support,h_foundation]);
@@ -264,11 +268,12 @@ module location_drainage(){
     }
 }
 
+
+
 module make_mold(){
     if(render_mold_above_ground) mold_above_ground();
     if(render_mold_underground) mold_underground();
-    if(render_mold_combine_tube) mold_combine_tube();
-    if(render_mold_drainage) mold_drainage();            
+    if(render_mold_combine_tube) mold_combine_tube();          
 }
 
 module mold_above_ground(){
@@ -309,15 +314,15 @@ module mold_underground(){
         make_underground();
             //cut out hole for drain pipe also into protection block
             translate([dia_city / 2 - l_drain,0, -h_foundation /2])
-            translate([-l_tube_protection ,0,0])
-            #resize([l_drain + l_tube_protection + w_mold_wall ,0,0])
+            translate([-l_tube_protection -2,0,0])
+            #resize([l_drain + l_tube_protection + w_mold_wall + 1,0,0])
             rotate([0,90,0])
             cylinder(l_drain, d=dia_drain);
     }
     
 }
 
-module mold_combine_tube(){
+module mold_combine_tube(){ //depricated
     //a hollow tube with bottom to insert both mold parts for glueing
     difference(){
         cylinder(h_underground + h_above_ground + h_mold_bottom, d= dia_city + w_mold_wall_combine);
